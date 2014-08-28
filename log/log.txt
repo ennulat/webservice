@@ -1,0 +1,85 @@
+	<pre>class: helper | @line:  29array(2) {
+  ["name"]=>
+  string(6) "Maurer"
+  ["email"]=>
+  string(16) "maurer@gmail.com"
+}
+</pre><pre>class: helper | @line:  29array(2) {
+  ["name"]=>
+  string(6) "Maurer"
+  ["email"]=>
+  string(16) "maurer@gmail.com"
+}
+</pre><pre>class: helper | @line:  29array(2) {
+  ["name"]=>
+  string(6) "Maurer"
+  ["email"]=>
+  string(16) "maurer@gmail.com"
+}
+</pre><pre>class: helper | @line:  29array(2) {
+  ["name"]=>
+  string(6) "Maurer"
+  ["email"]=>
+  string(16) "maurer@gmail.com"
+}
+</pre><pre>class: helper | @line:  29array(2) {
+  ["name"]=>
+  string(6) "Maurer"
+  ["email"]=>
+  string(16) "maurer@gmail.com"
+}
+</pre><pre>class: helper | @line:  29array(2) {
+  ["name"]=>
+  string(6) "Maurer"
+  ["email"]=>
+  string(16) "maurer@gmail.com"
+}
+</pre><pre>class: helper | @line:  29array(0) {
+}
+</pre><pre>class: helper | @line:  29string(139) "select status, operator_hash_fk as operator_hash, dialog_hash_pk as dialog_hash from user_operator_commitment where dialog_hash_pk ='Array'"
+</pre><pre>class: helper | @line:  29string(134) "select status, operator_hash_fk as operator_hash, dialog_hash_pk as dialog_hash from user_operator_commitment where dialog_hash_pk =''"
+</pre><pre>class: helper | @line:  29string(166) "select status, operator_hash_fk as operator_hash, dialog_hash_pk as dialog_hash from user_operator_commitment where dialog_hash_pk ='a48576f78912fd8bbb519df622325af9'"
+</pre><pre>class: helper | @line:  29array(1) {
+  [1]=>
+  array(2) {
+    ["operator_hash"]=>
+    string(20) "waiting for operator"
+    ["dialog_hash"]=>
+    string(32) "a48576f78912fd8bbb519df622325af9"
+  }
+}
+</pre><pre>class: helper | @line:  29array(1) {
+  [1]=>
+  array(2) {
+    ["operator_hash"]=>
+    string(20) "waiting for operator"
+    ["dialog_hash"]=>
+    string(32) "a48576f78912fd8bbb519df622325af9"
+  }
+}
+</pre><pre>class: helper | @line:  29array(1) {
+  [1]=>
+  array(2) {
+    ["operator_hash"]=>
+    string(20) "waiting for operator"
+    ["dialog_hash"]=>
+    string(32) "a48576f78912fd8bbb519df622325af9"
+  }
+}
+</pre><pre>class: helper | @line:  29array(3) {
+  ["status"]=>
+  string(1) "1"
+  ["operator_hash"]=>
+  string(20) "waiting for operator"
+  ["dialog_hash"]=>
+  string(32) "a48576f78912fd8bbb519df622325af9"
+}
+</pre><pre>class: helper | @line:  29array(3) {
+  ["status"]=>
+  string(1) "1"
+  ["operator_hash"]=>
+  string(20) "waiting for operator"
+  ["dialog_hash"]=>
+  string(32) "a48576f78912fd8bbb519df622325af9"
+}
+</pre>
