@@ -56,6 +56,36 @@ $server->wsdl->addComplexType('opOperatorAnddialog_hash','complexType','struct',
 			  'operator_hash' => array('name' => 'operator_hash','type' => 'xsd:string'),
 			  'dialog_hash' => array('name' => 'dialog_hash','type' => 'xsd:string')));               
  
+		
+/**
+ * SendChatMessage makes insert in message table
+ * @param array (dialog_hash, message)
+ */
+$server->register(
+                // method name:
+                'SendMessage', 	
+                // parameter list:
+                array('name'=>'tns:ipMessageparams'), 
+                // return value(s):
+                array('return'=>'xsd:boolean'),
+                // namespace:
+                $namespace,
+                // soapaction: (use default)
+                false,
+                // style: rpc or document
+                'rpc',
+                // use: encoded or literal
+                'encoded',
+                // description: documentation for the method
+                'send new offline message');
+
+/**
+ * Send Offline Message Input Param: array(user_hash, message)
+ */
+$server->wsdl->addComplexType('ipMessageparams','complexType','struct','all','',
+		array('user_hash' => array('name' => 'user_hash','type' => 'xsd:string'),
+			   'message' => array('name' => 'message','type' => 'xsd:string')));
+		
 /**
  * SendChatMessage makes insert in message table
  * @param array (dialog_hash, message)
@@ -388,6 +418,24 @@ function ObserveOperatorCommitment($dialog_hash){
 	
 	return $result;
 	
+}
+
+
+
+/**
+ * leave offline message in table: offlinemessage
+ * @param $chatmessageparams:array (user_hash, message)
+ * @return $success:bool
+ */
+function SendMessage($messageparams){
+	
+	global $model;
+
+	//helper::writelog($chatmessageparams);
+	if(!$model->SendMessage($messageparams))
+		return false;
+	else 
+		return  true;
 }
 
 

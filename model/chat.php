@@ -179,15 +179,16 @@ class chat{
 			$mode='INSERT';
 			$newuser = array('name' => $name, 'email' => $email, 'status' => 1, 'user_hash_pk' => hash('md5', $name.$email) );
 			$this->db->AutoExecute('user', $newuser, $mode);
-		}
+		}	
 		
 		$result['user_hash'] = $this->db->GetOne('select user_hash_pk from user where name = ? and email = ?', array($name, $email));
 		
 		//check if any operator is online, if so then leave request flag
 		$Operators = $this->db->GetAll('select operator_hash_pk as operator_hash from operator where status = 1');
 		$countOps = count($Operators);
-		$countOps -=1;
-	
+
+	    helper::writelog($countOps);
+	    helper::writelog($Operators);
 		//$randIndex = rand(0, $countOps);//zufalls op wählen
 		$result['operator_available'] = '0';
 		$result['dialog_hash'] = '0';
@@ -236,5 +237,27 @@ class chat{
 		//helper::writelog($result);
 		return $result;
 	}
+	
+	
+	/**
+	 * leave offline message
+	 * @param $data:array (user_hash, message)
+	 * @return $success:bool
+	 */
+	public function SendMessage($data){
+
+		$data['user_hash_fk'] = $data['user_hash'];
+		unset($data['user_hash']);
+		
+		if(!$this->db->AutoExecute('offlinemessage', $data, 'INSERT')){
+			helper::writelog('false');
+			return  false;
+		}else{
+			return  true;
+		}
+			//throw new DBErrorException();
+	}
+	
+	
 	
 }
