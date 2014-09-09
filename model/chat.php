@@ -52,9 +52,9 @@ class chat{
 
 		$data['dialog_hash_fk'] = $data['dialog_hash'];
 		unset($data['dialog_hash']);
-		helper::writelog($data);
+		//helper::writelog($data);
 		if(!$this->db->AutoExecute('message', $data, 'INSERT')){
-			helper::writelog('false');
+			//helper::writelog('false');
 			return  false;
 		}else{
 			return  true;
@@ -114,7 +114,7 @@ class chat{
 			}
 			//$i++;
 		}
-		helper::writelog($sql);
+		//helper::writelog($sql);
 		
 		return $result;
 	}
@@ -172,12 +172,9 @@ class chat{
 		$name = $userdata['name'];
 		$email = $userdata['email'];
 		$rs = $this->db->Execute('select * from user where name = ? and email = ?', array($name, $email));
-		if($rs->RecordCount()>0){//update
-			$mode = 'UPDATE';
-			$this->db->AutoExecute('user', array('status' => 1), $mode, "email = '".$email."'");
-		}else{//insert
+		if($rs->RecordCount()=== 0){//insert	
 			$mode='INSERT';
-			$newuser = array('name' => $name, 'email' => $email, 'status' => 1, 'user_hash_pk' => hash('md5', $name.$email) );
+			$newuser = array('name' => $name, 'email' => $email, 'user_hash_pk' => hash('md5', $name.$email) );
 			$this->db->AutoExecute('user', $newuser, $mode);
 		}	
 		
@@ -187,8 +184,8 @@ class chat{
 		$Operators = $this->db->GetAll('select operator_hash_pk as operator_hash from operator where status = 1');
 		$countOps = count($Operators);
 
-	    helper::writelog($countOps);
-	    helper::writelog($Operators);
+	    //helper::writelog($countOps);
+	    //helper::writelog($Operators);
 		//$randIndex = rand(0, $countOps);//zufalls op wählen
 		$result['operator_available'] = '0';
 		$result['dialog_hash'] = '0';
@@ -223,12 +220,12 @@ class chat{
 	}
 	
 	/**
-	 * ObserverOperatorCommitment check if operator has agreed a chatdialog
+	 * ObserveUserOperatorCommitment check if operator has agreed a chatdialog
 	 * @param $dialog_hash
 	 * @return array(status, operator_hash, dialog_hash);
 	 * 
 	 */ 
-	function ObserveOperatorCommitment($dialog_hash){
+	function ObserveUserOperatorCommitment($dialog_hash){
 
 		$sql = "select status, operator_hash_fk as operator_hash, dialog_hash_pk as dialog_hash ".
 		       "from user_operator_commitment ".
@@ -248,14 +245,28 @@ class chat{
 
 		$data['user_hash_fk'] = $data['user_hash'];
 		unset($data['user_hash']);
-		
+		helper::writelog($data);
 		if(!$this->db->AutoExecute('offlinemessage', $data, 'INSERT')){
-			helper::writelog('false');
+			//helper::writelog('false');
 			return  false;
 		}else{
 			return  true;
 		}
 			//throw new DBErrorException();
+	}
+	
+	/**
+	 * SetUserOperatorStatus set status in table: user_operator_commitment 
+	 * for appropriated dialog_hash
+	 * @param $data:array(dialog_hash, status)
+	 * @return $success:bool;
+	 */ 
+	function SetUserOperatorStatus($data){
+		helper::writelog($data);
+		if(!$this->db->AutoExecute('user_operator_commitment', array('status' => $data['status']), 'UPDATE',"dialog_hash_pk = '".$data['dialog_hash']."'" ))
+			return false;
+		else
+			return true;
 	}
 	
 	

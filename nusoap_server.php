@@ -24,18 +24,18 @@ $namespace = "http://webservice/nusoap_server.php";
 $server->wsdl->schemaTargetNamespace = $namespace;
 
 /**
- * ObserveOperatorCommitment check if operator has agreed a chatdialog
+ * ObserveUserOperatorCommitment check if operator has agreed a chatdialog
  * @param $user_hash
  * @return array(status, operator_hash, dialog_hash);
  * 
  */
 $server->register(
                 // method name:
-                'ObserveOperatorCommitment', 	
+                'ObserveUserOperatorCommitment', 	
                 // parameter list:
                 array('dialog_hash'=>'xsd:string'), 
                 // return value(s):
-                array('return'=>'tns:opOperatorAnddialog_hash'),
+                array('return'=>'tns:opUserOperatorCommitment'),
                 // namespace:
                 $namespace,
                 // soapaction: (use default)
@@ -45,17 +45,42 @@ $server->register(
                 // use: encoded or literal
                 'encoded',
                 // description: documentation for the method
-                'Observe if operator is online and return operator_hash, dialog_hash, status.');
-
-                
+                'Observe user operator committment, returns operator_hash, dialog_hash, status.');
+                           
 /**
  * ObserveOperatorCommitment Return Param: array(status, operator_hash, dialog_hash)
  */
-$server->wsdl->addComplexType('opOperatorAnddialog_hash','complexType','struct','all','',
+$server->wsdl->addComplexType('opUserOperatorCommitment','complexType','struct','all','',
 		array('status' => array('name' => 'status','type' => 'xsd:string'),
 			  'operator_hash' => array('name' => 'operator_hash','type' => 'xsd:string'),
 			  'dialog_hash' => array('name' => 'dialog_hash','type' => 'xsd:string')));               
  
+		
+/**
+ * SetUserOperatorStatus set status in table: user_operator_commitment 
+ * for appropriated dialog_hash
+ * @param $data:array(dialog_hash, status)
+ * @return $success:bool;
+ */ 
+$server->register(
+                // method name:
+                'SetUserOperatorStatus', 	
+                // parameter list:
+                array('name'=>'tns:ipSetUserOperatorStatus'), 
+                // return value(s):
+                array('return'=>'xsd:boolean'),
+                // namespace:
+                $namespace,
+                // soapaction: (use default)
+                false,
+                // style: rpc or document
+                'rpc',
+                // use: encoded or literal
+                'encoded',
+                // description: documentation for the method
+                'SetUserOperatorStatus set status in table: user_operator_commitment for appropriated dialog_hash');
+		
+			
 		
 /**
  * SendChatMessage makes insert in message table
@@ -85,6 +110,13 @@ $server->register(
 $server->wsdl->addComplexType('ipMessageparams','complexType','struct','all','',
 		array('user_hash' => array('name' => 'user_hash','type' => 'xsd:string'),
 			   'message' => array('name' => 'message','type' => 'xsd:string')));
+/**
+ * ipnut parameter for SetUserOperatorStatus
+ */
+$server->wsdl->addComplexType('ipSetUserOperatorStatus','complexType','struct','all','',
+		array('dialog_hash' => array('name' => 'dialog_hash','type' => 'xsd:string'),
+			   'status' => array('name' => 'status','type' => 'xsd:int')));
+
 		
 /**
  * SendChatMessage makes insert in message table
@@ -398,16 +430,37 @@ function HelloComplexWorld($mycomplextype)
 }
 
 /**
- * ObserveOperatorCommitment check if operator has agreed a chatdialog
+ * ObserveUserOperatorCommitment check if operator has agreed a chatdialog
  * @param $user_hash
  * @return array(status, operator_hash, dialog_hash);
  * 
  */ 
-function ObserveOperatorCommitment($dialog_hash){
+function ObserveUserOperatorCommitment($dialog_hash){
 	global $model;
 	
 	try{
-		$result = $model->ObserveOperatorCommitment($dialog_hash);
+		$result = $model->ObserveUserOperatorCommitment($dialog_hash);
+	}catch(Exception $ex){
+		//helper::writelog($ex->getMessage());
+		$sf = new soap_fault($ex->getCode(), '', $ex->getMessage(),'');
+		$sf->soap_defencoding = 'UTF-8';
+		return $sf;
+
+	}
+	
+	return $result;
+}
+
+/**
+ * SetUserOperatorStatus set status in table: user_operator_commitment 
+ * for appropriated dialog_hash
+ * @param $data:array(dialog_hash, status)
+ * @return $success:bool;
+ */ 
+function SetUserOperatorStatus($data){
+	global $model;
+	try{
+		$result = $model->SetUserOperatorStatus($data);
 	}catch(Exception $ex){
 		//helper::writelog($ex->getMessage());
 		$sf = new soap_fault($ex->getCode(), '', $ex->getMessage(),'');
@@ -421,7 +474,6 @@ function ObserveOperatorCommitment($dialog_hash){
 }
 
 
-
 /**
  * leave offline message in table: offlinemessage
  * @param $chatmessageparams:array (user_hash, message)
@@ -430,12 +482,16 @@ function ObserveOperatorCommitment($dialog_hash){
 function SendMessage($messageparams){
 	
 	global $model;
-
+	try{
 	//helper::writelog($chatmessageparams);
-	if(!$model->SendMessage($messageparams))
-		return false;
-	else 
-		return  true;
+	 	$result = $model->SendMessage($messageparams);
+	}catch(Exception $ex){
+		//helper::writelog($ex->getMessage());
+		$sf = new soap_fault($ex->getCode(), '', $ex->getMessage(),'');
+		$sf->soap_defencoding = 'UTF-8';
+		return $sf;
+	}
+	return $result;
 }
 
 
@@ -461,10 +517,10 @@ function SendChatMessage($chatmessageparams){
  * @return $result:array of array (message, dialog_hash, timestamp)
  */
 function GetNewChatMessages($filter){
-	helper::writelog($filter);
+	//helper::writelog($filter);
 	global $model;
 	$result = $model->GetNewChatMessages($filter);
-	helper::writelog($result);
+	//helper::writelog($result);
 	return $result;
 }
 
@@ -492,11 +548,11 @@ function GetAllChatMessages($filter){
  * @return array(dialog_hash,user_hash,operator_available)
  */
 function InitChatRequest($userdata){
-    helper::writelog($userdata);
+    //helper::writelog($userdata);
 	global $model;
 	$result = null;
 	try{
-		helper::writelog($userdata);
+		//	helper::writelog($userdata);
 		$result = $model->InitChatRequest($userdata);
 	}catch(Exception $ex){
 		//helper::writelog($ex->getMessage());
